@@ -1,0 +1,432 @@
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import Navigation from '../components/Navigation';
+import { truckAPI } from '../lib/api';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { Button } from '../components/ui/button';
+import { Badge } from '../components/ui/badge';
+import { 
+  ArrowLeft, Edit, Truck as TruckIcon, Wrench, 
+  Gauge, Cog, Wind, Zap, Droplet, Thermometer,
+  Calendar, Loader2
+} from 'lucide-react';
+
+const TruckDetail = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [truck, setTruck] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedTruck, setEditedTruck] = useState(null);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    const fetchTruck = async () => {
+      try {
+        const response = await truckAPI.get(id);
+        setTruck(response.data);
+      } catch (error) {
+        console.error('Error fetching truck:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTruck();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navigation />
+        <div className="flex items-center justify-center h-96">
+          <Loader2 className="h-12 w-12 animate-spin text-[#124481]" />
+        </div>
+      </div>
+    );
+  }
+
+  if (!truck) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navigation />
+        <div className="container mx-auto px-4 py-8">
+          <Card>
+            <CardContent className="py-12 text-center">
+              <TruckIcon className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Truck not found</h3>
+              <Button onClick={() => navigate('/trucks')}>Back to Trucks</Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  const InfoRow = ({ label, value, fullWidth = false }) => (
+    <div className={fullWidth ? "col-span-2" : ""}>
+      <label className="text-sm font-medium text-gray-600">{label}</label>
+      <p className="text-base mt-1 text-gray-900">{value || 'N/A'}</p>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-gray-50" data-testid="truck-detail-page">
+      <Navigation />
+      
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
+        {/* Header */}
+        <div className="mb-6">
+          <Button 
+            variant="ghost" 
+            onClick={() => navigate('/trucks')}
+            className="mb-4"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Trucks
+          </Button>
+          
+          <div className="flex items-start justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                {truck.identity?.year} {truck.identity?.make} {truck.identity?.model}
+              </h1>
+              <p className="text-gray-600">
+                {truck.identity?.truck_number || 'No truck number'} • VIN: {truck.identity?.vin || 'N/A'}
+              </p>
+            </div>
+            <div className="flex gap-3 items-center">
+              <Badge className="bg-[#289790]">
+                {truck.data_completeness || 0}% Complete
+              </Badge>
+            </div>
+          </div>
+        </div>
+
+        {/* Identity */}
+        <Card className="mb-6">
+          <CardHeader className="bg-gradient-to-r from-[#124481] to-[#1E7083] text-white">
+            <CardTitle className="flex items-center">
+              <TruckIcon className="mr-2 h-5 w-5" />
+              Vehicle Identity
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+              <InfoRow label="VIN" value={truck.identity?.vin} />
+              <InfoRow label="Year" value={truck.identity?.year} />
+              <InfoRow label="Make" value={truck.identity?.make} />
+              <InfoRow label="Model" value={truck.identity?.model} />
+              <InfoRow label="Truck Number" value={truck.identity?.truck_number} />
+              <InfoRow label="License Plate" value={truck.identity?.license_plate} />
+              <InfoRow label="Fleet Assignment" value={truck.identity?.fleet_assignment} />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Engine Specifications */}
+        {truck.engine && Object.keys(truck.engine).length > 0 && (
+          <Card className="mb-6">
+            <CardHeader className="bg-gradient-to-r from-[#1E7083] to-[#289790] text-white">
+              <CardTitle className="flex items-center">
+                <Cog className="mr-2 h-5 w-5" />
+                Engine Specifications
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                <InfoRow label="Manufacturer" value={truck.engine.manufacturer} />
+                <InfoRow label="Model" value={truck.engine.model} />
+                <InfoRow label="Serial Number" value={truck.engine.serial_number} />
+                <InfoRow label="Displacement" value={truck.engine.displacement} />
+                <InfoRow label="Horsepower" value={truck.engine.horsepower} />
+                <InfoRow label="Torque" value={truck.engine.torque} />
+                <InfoRow label="Fuel Type" value={truck.engine.fuel_type} />
+                <InfoRow label="Cylinders" value={truck.engine.cylinders} />
+                <InfoRow label="Aspiration" value={truck.engine.aspiration} />
+                <InfoRow label="ECM Part #" value={truck.engine.ecm_part_number} />
+                <InfoRow label="ECM Software" value={truck.engine.ecm_software_version} />
+                <InfoRow label="Build Date" value={truck.engine.build_date} />
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Transmission */}
+        {truck.transmission && Object.keys(truck.transmission).length > 0 && (
+          <Card className="mb-6">
+            <CardHeader className="bg-gradient-to-r from-[#289790] to-[#1E7083] text-white">
+              <CardTitle className="flex items-center">
+                <Gauge className="mr-2 h-5 w-5" />
+                Transmission
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                <InfoRow label="Manufacturer" value={truck.transmission.manufacturer} />
+                <InfoRow label="Model" value={truck.transmission.model} />
+                <InfoRow label="Serial Number" value={truck.transmission.serial_number} />
+                <InfoRow label="Type" value={truck.transmission.transmission_type} />
+                <InfoRow label="Speeds" value={truck.transmission.speeds} />
+                <InfoRow label="Gear Ratios" value={truck.transmission.gear_ratios} />
+                <InfoRow label="TCM Part #" value={truck.transmission.tcm_part_number} />
+                <InfoRow label="Clutch Type" value={truck.transmission.clutch_type} />
+                <InfoRow label="Oil Type" value={truck.transmission.oil_type} />
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Drivetrain */}
+        {truck.drivetrain && Object.keys(truck.drivetrain).length > 0 && (
+          <Card className="mb-6">
+            <CardHeader className="bg-gradient-to-r from-[#124481] to-[#1E7083] text-white">
+              <CardTitle className="flex items-center">
+                <Wrench className="mr-2 h-5 w-5" />
+                Drivetrain & Axles
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                <InfoRow label="Rear Axle Manufacturer" value={truck.drivetrain.rear_axle_manufacturer} />
+                <InfoRow label="Rear Axle Model" value={truck.drivetrain.rear_axle_model} />
+                <InfoRow label="Rear Axle Ratio" value={truck.drivetrain.rear_axle_ratio} />
+                <InfoRow label="Rear Axle Type" value={truck.drivetrain.rear_axle_type} />
+                <InfoRow label="Front Axle Manufacturer" value={truck.drivetrain.front_axle_manufacturer} />
+                <InfoRow label="Front Axle Model" value={truck.drivetrain.front_axle_model} />
+                <InfoRow label="Front Axle Rating" value={truck.drivetrain.front_axle_rating} />
+                <InfoRow label="Suspension Type" value={truck.drivetrain.suspension_type} />
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Emissions System */}
+        {truck.emissions && Object.keys(truck.emissions).length > 0 && (
+          <Card className="mb-6">
+            <CardHeader className="bg-gradient-to-r from-green-600 to-green-500 text-white">
+              <CardTitle className="flex items-center">
+                <Wind className="mr-2 h-5 w-5" />
+                Emissions & Aftertreatment
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                <InfoRow label="Emission Standard" value={truck.emissions.emission_standard} />
+                <InfoRow label="DPF Manufacturer" value={truck.emissions.dpf_manufacturer} />
+                <InfoRow label="DPF Part #" value={truck.emissions.dpf_part_number} />
+                <InfoRow label="SCR Manufacturer" value={truck.emissions.scr_manufacturer} />
+                <InfoRow label="SCR Part #" value={truck.emissions.scr_part_number} />
+                <InfoRow label="DEF Capacity" value={truck.emissions.def_system_capacity} />
+                <InfoRow label="DOC Part #" value={truck.emissions.doc_part_number} />
+                <InfoRow label="EGR System" value={truck.emissions.egr_system_type} />
+                <InfoRow label="DPF Install Date" value={truck.emissions.dpf_install_date} />
+                <InfoRow label="SCR Install Date" value={truck.emissions.scr_install_date} />
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Electronics */}
+        {truck.electronics && Object.keys(truck.electronics).length > 0 && (
+          <Card className="mb-6">
+            <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-500 text-white">
+              <CardTitle className="flex items-center">
+                <Zap className="mr-2 h-5 w-5" />
+                Electronics & Control Modules
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                <InfoRow label="ECM Manufacturer" value={truck.electronics.ecm_manufacturer} />
+                <InfoRow label="ECM Part #" value={truck.electronics.ecm_part_number} />
+                <InfoRow label="TCM Manufacturer" value={truck.electronics.tcm_manufacturer} />
+                <InfoRow label="TCM Part #" value={truck.electronics.tcm_part_number} />
+                <InfoRow label="ABS System" value={truck.electronics.abs_system_manufacturer} />
+                <InfoRow label="ABS Version" value={truck.electronics.abs_system_version} />
+                <InfoRow label="Body Controller" value={truck.electronics.body_control_module} />
+                <InfoRow label="Instrument Cluster" value={truck.electronics.instrument_cluster_type} />
+                <InfoRow label="Telematics Device" value={truck.electronics.telematics_device} />
+                <InfoRow label="Telematics Provider" value={truck.electronics.telematics_provider} />
+                <InfoRow label="Diagnostic Connector" value={truck.electronics.diagnostic_connector_type} />
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Braking System */}
+        {truck.braking && Object.keys(truck.braking).length > 0 && (
+          <Card className="mb-6">
+            <CardHeader className="bg-gradient-to-r from-red-600 to-red-500 text-white">
+              <CardTitle className="flex items-center">
+                <Gauge className="mr-2 h-5 w-5" />
+                Braking System
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                <InfoRow label="Brake Type" value={truck.braking.brake_type} />
+                <InfoRow label="Front Brakes" value={truck.braking.front_brake_type} />
+                <InfoRow label="Rear Brakes" value={truck.braking.rear_brake_type} />
+                <InfoRow label="Air Compressor" value={truck.braking.air_compressor_model} />
+                <InfoRow label="Air Dryer" value={truck.braking.air_dryer_model} />
+                <InfoRow label="ABS/EBS System" value={truck.braking.abs_ebs_system} />
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Electrical System */}
+        {truck.electrical && Object.keys(truck.electrical).length > 0 && (
+          <Card className="mb-6">
+            <CardHeader className="bg-gradient-to-r from-yellow-600 to-yellow-500 text-white">
+              <CardTitle className="flex items-center">
+                <Zap className="mr-2 h-5 w-5" />
+                Electrical System
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                <InfoRow label="Battery Count" value={truck.electrical.battery_count} />
+                <InfoRow label="Battery Voltage" value={truck.electrical.battery_voltage} />
+                <InfoRow label="Battery Type" value={truck.electrical.battery_type} />
+                <InfoRow label="Alternator Output" value={truck.electrical.alternator_output} />
+                <InfoRow label="Alternator Manufacturer" value={truck.electrical.alternator_manufacturer} />
+                <InfoRow label="Starter Type" value={truck.electrical.starter_type} />
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Fuel System */}
+        {truck.fuel_system && Object.keys(truck.fuel_system).length > 0 && (
+          <Card className="mb-6">
+            <CardHeader className="bg-gradient-to-r from-orange-600 to-orange-500 text-white">
+              <CardTitle className="flex items-center">
+                <Droplet className="mr-2 h-5 w-5" />
+                Fuel System
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                <InfoRow label="Tank Capacity" value={truck.fuel_system.fuel_tank_capacity} />
+                <InfoRow label="Tank Count" value={truck.fuel_system.fuel_tank_count} />
+                <InfoRow label="Pump Type" value={truck.fuel_system.fuel_pump_type} />
+                <InfoRow label="Injector Type" value={truck.fuel_system.fuel_injector_type} />
+                <InfoRow label="Filter Type" value={truck.fuel_system.fuel_filter_type} />
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Cooling System */}
+        {truck.cooling && Object.keys(truck.cooling).length > 0 && (
+          <Card className="mb-6">
+            <CardHeader className="bg-gradient-to-r from-cyan-600 to-cyan-500 text-white">
+              <CardTitle className="flex items-center">
+                <Thermometer className="mr-2 h-5 w-5" />
+                Cooling System
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                <InfoRow label="Radiator Type" value={truck.cooling.radiator_type} />
+                <InfoRow label="Coolant Type" value={truck.cooling.coolant_type} />
+                <InfoRow label="Fan Type" value={truck.cooling.fan_type} />
+                <InfoRow label="Thermostat Temp" value={truck.cooling.thermostat_temp} />
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Maintenance Information */}
+        {truck.maintenance && Object.keys(truck.maintenance).length > 0 && (
+          <Card className="mb-6">
+            <CardHeader className="bg-gradient-to-r from-purple-600 to-purple-500 text-white">
+              <CardTitle className="flex items-center">
+                <Calendar className="mr-2 h-5 w-5" />
+                Maintenance Information
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                <InfoRow label="Current Mileage" value={truck.maintenance.current_mileage ? `${truck.maintenance.current_mileage.toLocaleString()} mi` : null} />
+                <InfoRow label="In Service Date" value={truck.maintenance.in_service_date} />
+                <InfoRow label="Last Service" value={truck.maintenance.last_service_date} />
+                <InfoRow label="Last Oil Change" value={truck.maintenance.last_oil_change_date} />
+                <InfoRow label="Oil Change Mileage" value={truck.maintenance.last_oil_change_mileage ? `${truck.maintenance.last_oil_change_mileage.toLocaleString()} mi` : null} />
+                <InfoRow label="Last DPF Regen" value={truck.maintenance.last_dpf_regen_date} />
+                <InfoRow label="Last DPF Cleaning" value={truck.maintenance.last_dpf_cleaning_date} />
+                <InfoRow label="DPF Cleaning Mileage" value={truck.maintenance.last_dpf_cleaning_mileage ? `${truck.maintenance.last_dpf_cleaning_mileage.toLocaleString()} mi` : null} />
+                <InfoRow label="Tire Size (Front)" value={truck.maintenance.tire_size_front} />
+                <InfoRow label="Tire Size (Rear)" value={truck.maintenance.tire_size_rear} />
+                <InfoRow label="Last Tire Rotation" value={truck.maintenance.last_tire_rotation_date} />
+                <InfoRow label="PM Schedule" value={truck.maintenance.pm_schedule_interval ? `Every ${truck.maintenance.pm_schedule_interval} miles` : null} />
+                <InfoRow label="Next PM Due" value={truck.maintenance.next_pm_due_mileage ? `${truck.maintenance.next_pm_due_mileage.toLocaleString()} mi` : null} />
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Customer & Notes */}
+        {(truck.customer_name || truck.notes || truck.shop_notes) && (
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle>Additional Information</CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="space-y-4">
+                {truck.customer_name && (
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Customer</label>
+                    <p className="text-base mt-1 text-gray-900">{truck.customer_name}</p>
+                  </div>
+                )}
+                {truck.notes && (
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Notes</label>
+                    <p className="text-base mt-1 text-gray-900 whitespace-pre-wrap">{truck.notes}</p>
+                  </div>
+                )}
+                {truck.shop_notes && (
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Shop Notes</label>
+                    <p className="text-base mt-1 text-gray-900 whitespace-pre-wrap">{truck.shop_notes}</p>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Metadata */}
+        <Card>
+          <CardHeader>
+            <CardTitle>System Information</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <div className="grid grid-cols-2 gap-6 text-sm text-gray-600">
+              <div>
+                <label className="font-medium">Created</label>
+                <p className="mt-1">{new Date(truck.created_at).toLocaleString()}</p>
+              </div>
+              <div>
+                <label className="font-medium">Last Updated</label>
+                <p className="mt-1">{new Date(truck.updated_at).toLocaleString()}</p>
+              </div>
+              {truck.embedding_generated_at && (
+                <div className="col-span-2">
+                  <label className="font-medium">AI Knowledge Generated</label>
+                  <p className="mt-1">{new Date(truck.embedding_generated_at).toLocaleString()}</p>
+                  <Badge className="mt-1 bg-green-500">RAG Enabled</Badge>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+};
+
+export default TruckDetail;

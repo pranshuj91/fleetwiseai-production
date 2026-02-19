@@ -1,0 +1,401 @@
+/* ================================================================
+   RESPONSIVE OPTIMIZATIONS FOR DESKTOP & IPAD
+   ================================================================ */
+
+/* ================================================================
+   DESKTOP OPTIMIZATIONS (1280px+)
+   ================================================================ */
+@media (min-width: 1280px) {
+  /* Container max-width for better readability */
+  .container {
+    max-width: 1400px;
+  }
+  
+  /* Dashboard grid optimizations */
+  .dashboard-stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+  }
+  
+  /* Card spacing */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+  
+  /* Wider cards for desktop */
+  .desktop-card {
+    min-width: 350px;
+  }
+  
+  /* Two-column layouts */
+  .desktop-two-col {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+  }
+  
+  /* Larger text for readability on big screens */
+  .desktop-text-lg {
+    font-size: 1.125rem;
+  }
+}
+
+/* Extra large desktop (1536px+) */
+@media (min-width: 1536px) {
+  .container {
+    max-width: 1536px;
+  }
+  
+  /* 5-column grids for ultra-wide screens */
+  .dashboard-stats-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+/* ================================================================
+   IPAD OPTIMIZATIONS (768px - 1024px)
+   ================================================================ */
+@media (min-width: 768px) and (max-width: 1024px) {
+  /* Navigation adjustments for iPad */
+  nav {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  /* Stack navigation items better */
+  .nav-links {
+    gap: 0.5rem;
+  }
+  
+  /* Touch-friendly buttons */
+  button, .btn {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0.625rem 1rem;
+  }
+  
+  /* Two-column grid for iPad */
+  .dashboard-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  
+  .card-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  
+  /* Adjust form layouts */
+  .form-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  
+  /* Better table scrolling */
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Optimize modal sizes */
+  .modal-content {
+    max-width: 90vw;
+    margin: 2rem auto;
+  }
+  
+  /* Touch-friendly dropdowns */
+  .dropdown-menu {
+    min-width: 200px;
+    font-size: 1rem;
+  }
+  
+  .dropdown-item {
+    padding: 0.75rem 1rem;
+  }
+}
+
+/* iPad Portrait (768px - 834px) */
+@media (min-width: 768px) and (max-width: 834px) and (orientation: portrait) {
+  /* Single column for narrow portrait */
+  .dashboard-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  /* Stack forms in portrait */
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  /* Reduce padding for more content */
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* iPad Landscape (1024px) */
+@media (min-width: 1024px) and (max-width: 1366px) and (orientation: landscape) {
+  /* 3-column grid for landscape */
+  .dashboard-stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .card-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  /* Better sidebar layouts */
+  .sidebar-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 1.5rem;
+  }
+}
+
+/* ================================================================
+   TOUCH OPTIMIZATIONS (All touch devices)
+   ================================================================ */
+@media (hover: none) and (pointer: coarse) {
+  /* Larger touch targets */
+  a, button, .clickable {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Remove hover states on touch devices */
+  .hover\:bg-gray-100:hover {
+    background-color: transparent;
+  }
+  
+  /* Active states for touch feedback */
+  button:active, .btn:active {
+    transform: scale(0.98);
+    transition: transform 0.1s;
+  }
+  
+  /* Better spacing for touch */
+  .touch-spacing > * + * {
+    margin-top: 0.75rem;
+  }
+}
+
+/* ================================================================
+   PRINT OPTIMIZATIONS
+   ================================================================ */
+@media print {
+  /* Hide ALL non-essential elements */
+  nav, 
+  .no-print, 
+  button,
+  .sidebar,
+  header,
+  footer:not(.print-footer),
+  [class*="navigation"],
+  [class*="Navigation"] {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    overflow: hidden !important;
+  }
+  
+  /* Page setup */
+  @page {
+    margin: 0.4in;
+    size: letter portrait;
+  }
+  
+  /* Reset body */
+  html, body {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+  
+  /* Full width - remove grid layout constraints */
+  .container,
+  .max-w-7xl,
+  [class*="container"] {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  
+  /* Hide sidebar columns completely */
+  .grid {
+    display: block !important;
+  }
+  
+  .lg\\:col-span-1,
+  .col-span-1,
+  [class*="col-span-1"] {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+  }
+  
+  .lg\\:col-span-3,
+  .col-span-3,
+  [class*="col-span-3"] {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  /* AI Summary Card - main print target */
+  #ai-summary-print {
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+    margin: 0 !important;
+    width: 100% !important;
+  }
+  
+  /* Preserve gradient header */
+  [class*="bg-gradient-to-r"] {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    background: #124481 !important;
+    color: white !important;
+  }
+  
+  /* Preserve colored backgrounds */
+  .bg-gray-50 { background-color: #f9fafb !important; -webkit-print-color-adjust: exact !important; }
+  .bg-blue-50 { background-color: #eff6ff !important; -webkit-print-color-adjust: exact !important; }
+  .bg-green-50 { background-color: #f0fdf4 !important; -webkit-print-color-adjust: exact !important; }
+  .bg-orange-50 { background-color: #fff7ed !important; -webkit-print-color-adjust: exact !important; }
+  .bg-red-50 { background-color: #fef2f2 !important; -webkit-print-color-adjust: exact !important; }
+  .bg-yellow-50 { background-color: #fefce8 !important; -webkit-print-color-adjust: exact !important; }
+  .bg-purple-50 { background-color: #faf5ff !important; -webkit-print-color-adjust: exact !important; }
+  
+  /* Colored circles for steps */
+  .bg-green-600, .bg-green-700 {
+    background-color: #16a34a !important;
+    -webkit-print-color-adjust: exact !important;
+  }
+  
+  /* Border colors */
+  .border-l-4 {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  .border-green-500 { border-left-color: #22c55e !important; }
+  .border-blue-500 { border-left-color: #3b82f6 !important; }
+  .border-orange-500 { border-left-color: #f97316 !important; }
+  .border-red-500 { border-left-color: #ef4444 !important; }
+  .border-yellow-500 { border-left-color: #eab308 !important; }
+  
+  /* Prevent page breaks inside sections */
+  .print-section,
+  .card,
+  [class*="Card"] {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  
+  /* Allow page breaks between major sections */
+  .space-y-6 > div {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  
+  /* Remove shadows and unnecessary styling */
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+  
+  /* Links */
+  a {
+    text-decoration: none !important;
+    color: inherit !important;
+  }
+  
+  /* Avoid orphan/widow text */
+  p, li, div {
+    orphans: 3;
+    widows: 3;
+  }
+  
+  /* Hide URL bar content from browser */
+  a[href]:after {
+    content: none !important;
+  }
+}
+
+/* ================================================================
+   UTILITY CLASSES
+   ================================================================ */
+
+/* Desktop only */
+.desktop-only {
+  display: none;
+}
+
+@media (min-width: 1280px) {
+  .desktop-only {
+    display: block;
+  }
+}
+
+/* iPad only */
+.ipad-only {
+  display: none;
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  .ipad-only {
+    display: block;
+  }
+}
+
+/* Mobile only */
+.mobile-only {
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .mobile-only {
+    display: none;
+  }
+}
+
+/* Responsive font sizes */
+.responsive-text {
+  font-size: 0.875rem; /* Mobile */
+}
+
+@media (min-width: 768px) {
+  .responsive-text {
+    font-size: 1rem; /* Tablet */
+  }
+}
+
+@media (min-width: 1280px) {
+  .responsive-text {
+    font-size: 1.125rem; /* Desktop */
+  }
+}
+
+/* Responsive spacing */
+.responsive-spacing {
+  padding: 1rem;
+}
+
+@media (min-width: 768px) {
+  .responsive-spacing {
+    padding: 1.5rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .responsive-spacing {
+    padding: 2rem;
+  }
+}

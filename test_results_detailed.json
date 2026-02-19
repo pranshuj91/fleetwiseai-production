@@ -1,0 +1,24 @@
+{
+  "total_tests": 2,
+  "passed": 0,
+  "failed": 2,
+  "success_rate": 0.0,
+  "critical_failures": [],
+  "working_features": [],
+  "detailed_results": [
+    {
+      "test": "API Health Check",
+      "success": false,
+      "details": "Status code: No response",
+      "timestamp": "2025-11-03T11:43:20.813269",
+      "response_data": null
+    },
+    {
+      "test": "User Registration",
+      "success": false,
+      "details": "Status: No response, Error: No response",
+      "timestamp": "2025-11-03T11:44:20.924269",
+      "response_data": null
+    }
+  ]
+}

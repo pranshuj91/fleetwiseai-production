@@ -1,0 +1,14 @@
+{
+  "total_tests": 6,
+  "passed": 3,
+  "failed": 3,
+  "fallback_count": 0,
+  "working_fallbacks": [],
+  "ai_responses": [],
+  "failed_endpoints": [
+    "Diagnostic Fallback Test",
+    "Summary Fallback Test",
+    "Warranty Fallback Test"
+  ],
+  "success_rate": 50.0
+}
